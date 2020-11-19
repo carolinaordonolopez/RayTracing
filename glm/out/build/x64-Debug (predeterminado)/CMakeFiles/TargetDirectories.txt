@@ -1,0 +1,3 @@
+C:/Users/carol/Desktop/UNIVERSIDAD/5- Máster/1- Realidad Virtual y Aumentada/Práctica 2 - Ray tracing/glm/out/build/x64-Debug (predeterminado)/CMakeFiles/glm_dummy.dir
+C:/Users/carol/Desktop/UNIVERSIDAD/5- Máster/1- Realidad Virtual y Aumentada/Práctica 2 - Ray tracing/glm/out/build/x64-Debug (predeterminado)/CMakeFiles/edit_cache.dir
+C:/Users/carol/Desktop/UNIVERSIDAD/5- Máster/1- Realidad Virtual y Aumentada/Práctica 2 - Ray tracing/glm/out/build/x64-Debug (predeterminado)/CMakeFiles/rebuild_cache.dir
