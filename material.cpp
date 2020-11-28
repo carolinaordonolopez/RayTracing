@@ -5,7 +5,7 @@
 * Practice 2.
 * Ray tracing.
 *
-* Jose Pascual Molina Masso.
+* Carolina Ordoño López.
 * Escuela Superior de Ingenieria Informatica de Albacete.
 */
 
@@ -96,25 +96,21 @@ glm::vec3 Material::Shade(ShadingInfo& shadInfo)
 
 	while (currentLight != NULL) {
 		Id = Idt = Is = Ist = Ia = glm::vec3(0.0, 0.0, 0.0);
-
-		// L = v desde el punto de interés hacia la fuente de luz
+		// L = vector desde el punto de interés hacia la fuente de luz
 		L = glm::normalize(currentLight->position - shadInfo.point);
 		LdotN = glm::dot(L, shadInfo.normal);
-		Ldot_N = glm::dot(L, -shadInfo.normal);
 		shadInfo.pWorld->numShadRays++;
 
-		R = glm::normalize(2 * LdotN * shadInfo.normal - L);
-		V = glm::normalize(-shadInfo.rayDir);
-		RdotV = glm::dot(R, V);
 
 		if (LdotN > 0) { //Si=1 por lo que habría reflexión
 
 			// Reflexión difusa => Id = Kd * sum(Si*Ilid*(Li*N))
-			if (LdotN > 0) {
-				Id = Kd * currentLight->Id * LdotN;
-			}
+			Id = Kd * currentLight->Id * LdotN;
 
 			//Reflexión especular => Is = ks* sum(Si*Ilis*(Ri*V))^n
+			R = glm::normalize(2 * LdotN * shadInfo.normal - L);
+			V = glm::normalize(-shadInfo.rayDir);
+			RdotV = glm::dot(R, V);
 			if (RdotV > 0) {
 				Is = Ks * currentLight->Is * pow(RdotV, n);
 			}
@@ -122,16 +118,14 @@ glm::vec3 Material::Shade(ShadingInfo& shadInfo)
 		else if (LdotN < 0) { //Si'=1 por lo que habría transmisión
 
 			//Transmisión difusa => Idt = Kdt * sum(S'i*Ilid*(Li*(-N)))
-			if (Ldot_N > 0) {
+			Ldot_N = glm::dot(L, -shadInfo.normal);
+			if (Ldot_N > 0) {	
 				Idt = Kdt * currentLight->Id * Ldot_N;
 			}
-
-
 
 			//Transmisión especular => Ist = Kst* sum(Si'*Ilis*(Ti*V)^n
 
 			// Calculo del RAYO REFRACTADO
-			//float a = 1.0 / ior || 1.0;
 			float b = 0.0;
 			float cos = glm::dot(L, shadInfo.normal);
 			float aux = 1 + ratio * ratio * (cos * cos - 1);
@@ -162,14 +156,13 @@ glm::vec3 Material::Shade(ShadingInfo& shadInfo)
 		while (currentObject != NULL) { //Recorremos los objetos
 			t_aux = currentObject->NearestInt(shadInfo.point, L);
 			if (t_aux > TMIN) {
-				//if (currentObject->pMaterial->Kt != glm::vec3(0.0, 0.0, 0.0)) { //Si tiene transparencia
 				atenuation *= currentObject->pMaterial->Kt; //Si es opaco se multiplicará por 0
-			//}
 			}
 			currentObject = shadInfo.pWorld->objects.Next();
 		}
 
-		Ilocal += Ia + (Id + Is + Idt + Ist) * atenuation; //Sumamos las componentes de la luz
+		//Sumamos las componentes de la luz teniendo en cuenta la atenuación
+		Ilocal += Ia + (Id + Is + Idt + Ist) * atenuation; 
 
 		currentLight = shadInfo.pWorld->lights.Next();
 	}
@@ -197,7 +190,6 @@ glm::vec3 Material::Shade(ShadingInfo& shadInfo)
 		if (isTrans) {
 			if (VdotN > 0) {
 				//RAYO REFRACCIÓN = en la dirección de refracción desde el punto de intersección
-				//float a = 1.0 / ior || 1.0;
 				float b = 0.0;
 				float aux = 1 + ratio * ratio * (VdotN * VdotN - 1);
 				if (aux >= 0) {
